@@ -210,7 +210,7 @@ def dingding_bot(title: str, content: str) -> None:
         print("钉钉机器人 推送成功！")
     else:
         print("钉钉机器人 推送失败！")
-
+"""
 
 def feishu_bot(title: str, content: str) -> None:
     """
@@ -229,6 +229,32 @@ def feishu_bot(title: str, content: str) -> None:
         print("飞书 推送成功！")
     else:
         print("飞书 推送失败！错误信息如下：\n", response)
+"""
+
+def feishu_bot(title: str, content: str) -> None:
+    """
+    使用 飞书机器人 推送消息。
+    """
+    if not push_config.get("FSKEY"):
+        print("飞书 服务的 FSKEY 未设置!!\n取消推送")
+        return
+    print("飞书 服务启动")
+    # 修复：FSKEY直接存完整webhook地址，不再拼接url
+    url = push_config.get("FSKEY")
+    data = {"msg_type": "text", "content": {"text": f"{title}\n{content}"}}
+    headers = {"Content-Type": "application/json"}
+    try:
+        resp = requests.post(url, data=json.dumps(data), headers=headers)
+        print("飞书原始返回：", resp.text)
+        response = resp.json()
+    except Exception as e:
+        print(f"飞书推送解析异常: {e}")
+        response = {}
+    if response.get("StatusCode") == 0 or response.get("code") == 0:
+        print("飞书 推送成功!")
+    else:
+        print("飞书 推送失败! 错误信息如下: \n", response)
+
 
 
 def go_cqhttp(title: str, content: str) -> None:
